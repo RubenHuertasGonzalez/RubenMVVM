@@ -1,42 +1,40 @@
 package com.ruben.rubenmvvm
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class UsersViewModel : ViewModel() {
-    private var _selectedUser: User? = null
-        set(value) {
-            field = value
-        }
+    private val _selectedUser = MutableLiveData<User?>()
+    val currentUser: LiveData<User?> get() = _selectedUser
 
-    var currentUser: User?
-        get() = _selectedUser
-        set(value) {
-            _selectedUser = value
-        }
+    private val _userDetailLiveData = MutableLiveData<UserDetail>()
+    val userDetailLiveData: LiveData<UserDetail> get() = _userDetailLiveData
 
-    private val userDetailTable = listOf(
-        UserDetail("ruben", "20", "ruben@gmail.com"),
-        UserDetail("enaitz", "28", "enaitz@gmail.com"),
-        UserDetail("messi", "10", "messi@gmail.com"),
-        UserDetail("ronaldo", "54", "ronaldo@gmail.com"),
-        UserDetail("alonso", "47", "alonso@gmail.com")
+    private val users = listOf(
+        User("ruben", "20"),
+        User("enaitz", "28"),
+        User("messi", "10"),
+        User("ronaldo", "54"),
+        User("alonso", "47")
     )
 
     private var currentIndex = 0
 
-    fun getNextUserDetail(): UserDetail {
-        val userDetail = userDetailTable[currentIndex]
-        currentIndex = (currentIndex + 1) % userDetailTable.size
-        return userDetail
+    fun getNextUserDetail(): User {
+        val user = users[currentIndex]
+        currentIndex = (currentIndex + 1) % users.size
+        val userDetail = UserDetail(user.username, user.password)
+        _userDetailLiveData.value = userDetail
+        return user
     }
 
     fun updateCurrentUser(user: User?) {
-        _selectedUser = user
-    }
-
-    fun getSpecificUserDetail(): UserDetail? {
-        return userDetailTable.find {
-            it.username == _selectedUser?.username
-        }
+        _selectedUser.value = user
     }
 }
+
+
+
+
+
